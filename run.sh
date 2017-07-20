@@ -3,6 +3,8 @@
 buildDir="build"
 buildLog="buildLog.txt"
 
+outputLog="outputLog.txt"
+
 #de
 makeTarget="main"
 exeName="textManip"
@@ -87,6 +89,7 @@ testOk() {
 
       #Move source files into the buildDir
       cp src/* $buildDir
+      cp lib/*/*.a $buildDir 
 
       #Move to the build directory
       cd ./$buildDir
@@ -96,6 +99,9 @@ testOk() {
          echo "There is no makefile in the build directory">> ../$buildLog
          exit 1
       fi
+
+      #Index the libraries
+      ranlib *.a
 
       echo "Invoking:  make $makeTarget" >> ../$buildLog
       make $makeTarget >> ../$buildLog 
@@ -121,5 +127,15 @@ testOk() {
 
       echo $separator >> $buildLog
 
-   
+      echo "Running the executable - output located in: "$outputLog >> $buildLog
+
+      #Begin outputting to the outputLog
+      echo "Running the executable..." > $outputLog
+      echo $separator >> $outputLog
+ 
+      #Run the exe using the given text field param 
+      ./$exeName $1 >> $outputLog
+
+      echo "Finished." >> $outputLog
+
 exit 0
