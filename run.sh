@@ -5,30 +5,33 @@ buildLog="buildLog.txt"
 
 #de
 makeTarget="main"
-makeExe="textManip"
+exeName="textManip"
 
 separator="============================================================"
 
+echo > $buildLog
 
 testOk() {
 	if [[ ${1: -4} == ".txt" ]]; then
-		echo "Found text file: "$1
+		echo "Found text file: "$1 >> $buildLog
 		return 0
 	else
-		echo "No text file found. Exiting..."
+		echo "No text file found. Exiting..." >> $buildLog
 		return 1
 	fi
 }
-   echo $separator
+   echo "Executing grade.sh..." > $buildLog
+
+   echo $separator >> $buildLog
 	#Make sure the necessary text file exists
 	testOk $1
    	if [[ ! $? -eq 0 ]]; then
-      	echo "The required text file does not exist, or its contents are not valid."
-    	echo "Fix this error."
+      echo "The required text file does not exist, or its contents are not valid.">> $buildLog
+    	echo "Fix this error.">> $buildLog
     	exit 1
    	fi
 
-      echo $separator
+      echo $separator >> $buildLog
 
       #Remove the textManip executable if it already exists
    	if [[ -e textManip ]]; then
@@ -37,26 +40,26 @@ testOk() {
 
       #Verify existence of the src folder and it's required files.
    	if [[ ! -e src ]]; then
-   		echo "Missing src folder. Exiting..."
+   		echo "Missing src folder. Exiting...">> $buildLog
    		exit 1
    	else 
          if [[ ! -e src/makefile ]]; then
-            echo "Missing makefile from src. Exiting..."
+            echo "Missing makefile from src. Exiting...">> $buildLog
             exit 1
          fi
          if [[ ( ! -e src/main.c ) || ( ! -e src/main.h ) ]]; then
-            echo "Missing required file in src. Exiting..."
+            echo "Missing required file in src. Exiting...">> $buildLog
             exit 1
          fi
       fi
 
       #Verify the existence of the lib folder and it's required files
    	if [[ ! -e lib ]]; then
-   		echo "Missing lib folder. Exiting..."
+   		echo "Missing lib folder. Exiting...">> $buildLog
    		exit 1
    	else
          if [[ ! -e lib/CLogger ]]; then
-            echo "Missing CLogger library. Exiting..."
+            echo "Missing CLogger library. Exiting...">> $buildLog
             exit 1
          fi
       fi
@@ -67,13 +70,13 @@ testOk() {
    		exit 1
       else
          if [[ ( ! -e res/positive.txt ) || ( ! -e res/negative.txt ) ]]; then
-            echo "Missing require file in res. Exiting..."
+            echo "Missing require file in res. Exiting...">> $buildLog
             exit 1
          fi
    	fi
 
-      echo "Finished verifying files in project."
-      echo "Building project to /"$buildDir
+      echo "Finished verifying files in project.">> $buildLog
+      echo "Building project to /"$buildDir>> $buildLog
 
       #Clear the buildDir if it exists
       if [[ -d $buildDir ]]; then
@@ -86,15 +89,37 @@ testOk() {
       cp src/* $buildDir
 
       #Move to the build directory
-      cd $buildDir
+      cd ./$buildDir
 
          # Verify we have a makefile
       if [[ ! -e makefile ]] && [[ ! -e Makefile ]] && [[ ! -e GNUmakefile ]]; then
-         echo "There is no makefile in the build directory" >> ../$buildLog
-         echo $Separator >> ../$buildLog
-         mv ../$buildLog ../$spid.txt
-         exit 6
+         echo "There is no makefile in the build directory">> ../$buildLog
+         exit 1
       fi
 
+      echo "Invoking:  make $makeTarget" >> ../$buildLog
+      make $makeTarget >> ../$buildLog 
 
+      # Verify existence of executable
+      if [[ ! -e $exeName ]]; then
+         # Try default make
+         make
+         if [[ ! -e $exeName ]]; then
+            echo "Build failed; the file $exeName does not exist" >> ../$buildLog
+            echo $Separator >> ../$buildLog
+            mv ../$buildLog ../$spid.txt
+            exit 7
+         fi
+      fi
+
+      echo "Build succeeded..." >> ../$buildLog
+
+      # Move executable up to test directory and return there
+      echo "Moving the executable $exeName to the test directory." >> ../$buildLog
+      mv ./$exeName .. 
+      cd .. 
+
+      echo $separator >> $buildLog
+
+   
 exit 0
