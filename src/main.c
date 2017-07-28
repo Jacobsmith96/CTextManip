@@ -8,14 +8,18 @@ int main(int argc, const char * argv[]){
 		clogger("File not found...\n");
 		return 0;
 	}
-	else{
-		char * temp = malloc(sizeof(char)*64);
-		strcat(temp, "Found file: ");
-		strcat(temp, argv[1]);
-		clogger(temp);
-		free(temp);
-	}
+
+	char * temp = malloc(sizeof(char)*64);
+	strcat(temp, "Found file: ");
+	strcat(temp, argv[1]);
+	clogger(temp);
+	clogger("Beginning analysis of document...");
+	free(temp);
+
+	int counter = 0;
+
 	
+
 	closeCLogger();
 	return 1;
 }

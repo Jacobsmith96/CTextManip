@@ -1,0 +1,11 @@
+Executing grade.sh...
+============================================================
+Found text file: text.txt
+============================================================
+Finished verifying files in project.
+Building project to /build
+Invoking:  make main
+gcc -std=c99 -g -Wall   -c -o main.o main.c
+gcc -o textManip -std=c99 -g -Wall -L. -lCLogger main.c
+Build failed; the file textManip does not exist
+

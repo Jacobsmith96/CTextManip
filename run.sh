@@ -1,5 +1,5 @@
 #!/bin/bash
-#declare build path and buildLog name
+#Declare build path and buildLog name
 buildDir="build"
 buildLog="buildLog.txt"
 
